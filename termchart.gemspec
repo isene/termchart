@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'termchart'
-  s.version     = '0.1.0'
+  s.version     = '0.1.1'
   s.licenses    = ['Unlicense']
   s.summary     = "Terminal charts with Unicode and ANSI colors"
   s.description = "Render sparklines, line charts (braille), candlestick charts, and bar charts as plain strings with ANSI color codes. Zero dependencies, pure Ruby."
@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
     "lib/termchart/bar.rb",
     "README.md"
   ]
-  s.homepage    = 'https://github.com/isene/termgraph'
-  s.metadata    = { "source_code_uri" => "https://github.com/isene/termgraph" }
+  s.homepage    = 'https://github.com/isene/termchart'
+  s.metadata    = { "source_code_uri" => "https://github.com/isene/termchart" }
   s.required_ruby_version = '>= 2.7.0'
 end
