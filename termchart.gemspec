@@ -1,6 +1,8 @@
+require_relative 'lib/termchart/version'
+
 Gem::Specification.new do |s|
   s.name        = 'termchart'
-  s.version     = '0.1.1'
+  s.version     = Termchart::VERSION
   s.licenses    = ['Unlicense']
   s.summary     = "Terminal charts with Unicode and ANSI colors"
   s.description = "Render sparklines, line charts (braille), candlestick charts, and bar charts as plain strings with ANSI color codes. Zero dependencies, pure Ruby."
