@@ -25,8 +25,9 @@ module Termchart
       data_range = data_max - data_min
       data_range = 1.0 if data_range.zero?
 
-      # Reserve space for Y-axis labels
-      y_label_w = format_num(data_max).length + 1
+      # Reserve space for Y-axis labels (use widest of min/mid/max)
+      mid = data_min + data_range / 2.0
+      y_label_w = [format_num(data_max), format_num(data_min), format_num(mid)].map(&:length).max + 1
       chart_w = @width - y_label_w
       chart_w = 10 if chart_w < 10
       chart_h = @height
