@@ -17,6 +17,7 @@ module Termchart
 
     def render
       return "" if @series.empty?
+      effective_height = [@height, 3].max
 
       # Compute global min/max across all series
       all_vals = @series.flat_map { |s| s[:values] }
@@ -27,10 +28,10 @@ module Termchart
 
       # Reserve space for Y-axis labels (use widest of min/mid/max)
       mid = data_min + data_range / 2.0
-      y_label_w = [format_num(data_max), format_num(data_min), format_num(mid)].map(&:length).max + 1
+      y_label_w = [Termchart.format_num(data_max), Termchart.format_num(data_min), Termchart.format_num(mid)].map(&:length).max + 1
       chart_w = @width - y_label_w
       chart_w = 10 if chart_w < 10
-      chart_h = @height
+      chart_h = effective_height
 
       # Pixel dimensions (braille: 2 dots wide, 4 dots tall per cell)
       px_w = chart_w * 2
@@ -66,12 +67,12 @@ module Termchart
       lines = chart_str.split("\n")
       result = lines.each_with_index.map do |line, row|
         if row == 0
-          label = format_num(data_max).rjust(y_label_w - 1) + "┤"
+          label = Termchart.format_num(data_max).rjust(y_label_w - 1) + "┤"
         elsif row == chart_h - 1
-          label = format_num(data_min).rjust(y_label_w - 1) + "┤"
+          label = Termchart.format_num(data_min).rjust(y_label_w - 1) + "┤"
         elsif row == chart_h / 2
           mid = data_min + data_range / 2.0
-          label = format_num(mid).rjust(y_label_w - 1) + "┤"
+          label = Termchart.format_num(mid).rjust(y_label_w - 1) + "┤"
         else
           label = " " * (y_label_w - 1) + "│"
         end
@@ -82,7 +83,7 @@ module Termchart
       if @series.any? { |s| s[:label] }
         legend = @series.map do |s|
           name = s[:label] || "data"
-          colorize("━━", s[:color]) + " " + name
+          Termchart.colorize("━━", s[:color]) + " " + name
         end.join("  ")
         result << " " * y_label_w + legend
       end
@@ -113,25 +114,5 @@ module Termchart
       end
     end
 
-    def format_num(v)
-      if v.abs >= 1000
-        "%.0f" % v
-      elsif v.abs >= 1
-        "%.1f" % v
-      else
-        "%.2f" % v
-      end
-    end
-
-    def colorize(str, color)
-      code = case color
-             when Integer then "38;5;#{color}"
-             when /\A#?([0-9a-fA-F]{6})\z/
-               r, g, b = [$1].pack("H*").unpack("CCC")
-               "38;2;#{r};#{g};#{b}"
-             else "38;5;#{color}"
-             end
-      "\e[#{code}m#{str}\e[0m"
-    end
   end
 end

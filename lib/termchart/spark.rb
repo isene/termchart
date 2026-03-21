@@ -15,26 +15,7 @@ module Termchart
         TICKS[idx]
       end
       line = chars.join
-      color ? colorize(line, color) : line
+      color ? Termchart.colorize(line, color) : line
     end
-
-    private
-
-    def self.colorize(str, color)
-      code = case color
-             when Integer then "38;5;#{color}"
-             when Symbol  then "38;5;#{NAMED_COLORS[color] || 7}"
-             when /\A#?([0-9a-fA-F]{6})\z/
-               r, g, b = [$1].pack("H*").unpack("CCC")
-               "38;2;#{r};#{g};#{b}"
-             else "38;5;#{color}"
-             end
-      "\e[#{code}m#{str}\e[0m"
-    end
-
-    NAMED_COLORS = {
-      red: 196, green: 82, blue: 33, yellow: 226, cyan: 51,
-      magenta: 201, white: 255, gray: 245, orange: 208
-    }.freeze
   end
 end

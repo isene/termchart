@@ -21,6 +21,9 @@ module Termchart
 
     def render
       return "" if @items.empty?
+      if @items.any? { |i| i[:value] < 0 }
+        raise ArgumentError, "Bar chart does not support negative values"
+      end
       @orientation == :horizontal ? render_horizontal : render_vertical
     end
 
@@ -43,7 +46,7 @@ module Termchart
         pad    = bar_w - visible_len(bar)
         pad    = 0 if pad < 0
         bar_str = bar + " " * pad
-        bar_str = colorize(bar_str, item[:color]) if item[:color]
+        bar_str = Termchart.colorize(bar_str, item[:color]) if item[:color]
         lbl = item[:label].ljust(label_w)
         val = format_val(item[:value]).rjust(val_w)
         "#{lbl} │#{bar_str} #{val}"
@@ -78,7 +81,7 @@ module Termchart
       h.times do |row|
         parts = cols.each_with_index.map do |col, i|
           cell = col[row]
-          @items[i][:color] ? colorize(cell, @items[i][:color]) : cell
+          @items[i][:color] ? Termchart.colorize(cell, @items[i][:color]) : cell
         end
         lines << parts.join(" ")
       end
@@ -96,15 +99,5 @@ module Termchart
       str.gsub(/\e\[[0-9;]*m/, "").length
     end
 
-    def colorize(str, color)
-      code = case color
-             when Integer then "38;5;#{color}"
-             when /\A#?([0-9a-fA-F]{6})\z/
-               r, g, b = [$1].pack("H*").unpack("CCC")
-               "38;2;#{r};#{g};#{b}"
-             else "38;5;#{color}"
-             end
-      "\e[#{code}m#{str}\e[0m"
-    end
   end
 end
